@@ -4,9 +4,8 @@ import pickle
 
 app = Flask(__name__)
 
-# Load model and scaler
+# Load model only (no scaler)
 model = pickle.load(open("tyresinkage.pkl", "rb"))
-scaler_X = pickle.load(open("X_scaledTS.pkl", "rb"))
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -22,8 +21,7 @@ def predict():
         sc = 1 if soil == "soft" else 0
 
         features = np.array([[normal_load, inflation_pressure, sc, DP, slip]])
-        scaled_features = scaler_X.transform(features)
-        prediction = model.predict(scaled_features)[0]
+        prediction = model.predict(features)[0]
 
         return jsonify({"tyre_sinkage_mm": round(prediction, 2)})
 
